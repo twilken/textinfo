@@ -20,7 +20,17 @@ func main() {
 		log.Fatal("Could not read file.")
 	}
 	text := string(dat)
-	words := strings.Fields(text)
+	//words := strings.Fields(text)
+
+	words := strings.FieldsFunc(text, func(r rune) bool {
+		switch r {
+		case '.', ',', '!', '?', ' ', '"', '\'', ':', ';', '(', ')', '\n', '\r',
+			'\t', '\v', '\\', '/', '\f', '\a', '\b':
+			return true
+		}
+		return false
+	})
+
 	counts := make(map[string]int)
 	for _, word := range words {
 		_, present := counts[word]
@@ -31,5 +41,7 @@ func main() {
 		}
 	}
 	fmt.Println("Info about:", *flagPathToTextfile)
-	fmt.Println(counts)
+	for key, val := range counts {
+		fmt.Printf("%5v %v\n", val, key)
+	}
 }
