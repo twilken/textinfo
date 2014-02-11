@@ -1,4 +1,4 @@
 textinfo
 ========
 
-Show some information about a textfile. 
+Dispay the number of words and the word frequency of a text file.
