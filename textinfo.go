@@ -8,21 +8,23 @@ import (
 	"strings"
 )
 
-var flagPathToTextfile = flag.String("path", "./text.txt", "The textfile you want to analyse.")
+var flagPath = flag.String("path", "./text.txt", "The textfile you want to analyse.")
 
 func init() {
 	flag.Parse()
 }
 
-func main() {
-	dat, err := ioutil.ReadFile(*flagPathToTextfile)
+func readText(path *string) *string {
+	dat, err := ioutil.ReadFile(*flagPath)
 	if err != nil {
-		log.Fatal("Could not read file.")
+		log.Fatal("Could not read file at " + *path)
 	}
 	text := string(dat)
-	//words := strings.Fields(text)
+	return &text
+}
 
-	words := strings.FieldsFunc(text, func(r rune) bool {
+func extractWords(text *string) *[]string {
+	words := strings.FieldsFunc(*text, func(r rune) bool {
 		switch r {
 		case '.', ',', '!', '?', ' ', '"', '\'', ':', ';', '(', ')', '\n', '\r',
 			'\t', '\v', '\\', '/', '\f', '\a', '\b':
@@ -30,9 +32,12 @@ func main() {
 		}
 		return false
 	})
+	return &words
+}
 
+func countWords(words *[]string) *map[string]int {
 	counts := make(map[string]int)
-	for _, word := range words {
+	for _, word := range *words {
 		_, present := counts[word]
 		if present {
 			counts[word]++
@@ -40,8 +45,16 @@ func main() {
 			counts[word] = 1
 		}
 	}
-	fmt.Println("Info about:", *flagPathToTextfile)
-	for key, val := range counts {
+	return &counts
+}
+
+func main() {
+	text := readText(flagPath)
+	words := extractWords(text)
+	counts := countWords(words)
+
+	fmt.Println("Info about:", *flagPath)
+	for key, val := range *counts {
 		fmt.Printf("%5v %v\n", val, key)
 	}
 }
