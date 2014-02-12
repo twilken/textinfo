@@ -52,7 +52,7 @@ func readText(path *string) *string {
 func extractWords(text *string) *[]string {
 	words := strings.FieldsFunc(*text, func(r rune) bool {
 		switch r {
-		case '.', ',', '!', '?', ' ', '"', '\'', ':', ';', '(', ')', '\n', '\r',
+		case '.', ',', '!', '?', ' ', '"', ':', ';', '(', ')', '\n', '\r',
 			'\t', '\v', '\\', '/', '\f', '\a', '\b':
 			return true
 		}
