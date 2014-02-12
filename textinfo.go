@@ -9,6 +9,7 @@ import (
     "strings"
 )
 
+// Command line arguments.
 var flagPath = flag.String("path", "./text.txt", "The textfile you want to analyse.")
 var flagNumOfWordsToPrint = flag.Int("n", 50, "Number of most frequent words to show")
 
@@ -18,7 +19,7 @@ type Pair struct {
     Value int
 }
 
-// A slice of Pairs that implements sort.Interface to sort by Value.
+// A slice of Pairs that implements sort.Interface to sort by Value. Used as a sortable map.
 type PairList []Pair
 
 func (p PairList) Swap(i, j int) { 
@@ -45,6 +46,7 @@ func sortMapByValue(m map[string]int) PairList {
     return p
 }
 
+// Read text from file at path and return the whole text as a string reference.
 func readText(path *string) *string {
     dat, err := ioutil.ReadFile(*flagPath)
     if err != nil {
@@ -54,6 +56,7 @@ func readText(path *string) *string {
     return &text
 }
 
+// Split a string into an array of words.
 func extractWords(text *string) *[]string {
     lowercase := strings.ToLower(*text)
     words := strings.FieldsFunc(lowercase, func(r rune) bool {
@@ -67,6 +70,7 @@ func extractWords(text *string) *[]string {
     return &words
 }
 
+// Return a map of each word and it's frequency.
 func countWords(words *[]string) *map[string]int {
     counts := make(map[string]int)
     for _, word := range *words {
