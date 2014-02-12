@@ -86,9 +86,11 @@ func countWords(words *[]string) *map[string]int {
 func main() {
     text := readText(flagPath)
     words := extractWords(text)
+    totalWordCount := len(*words)
     counts := countWords(words)
     sorted := sortMapByValue(*counts)
 
+    fmt.Println("Total number of words:", totalWordCount)
     numberOfWordsToPrint := 45
     for i := 0; i < numberOfWordsToPrint; i++ {
         fmt.Printf("%5v %v\n", sorted[i].Value, sorted[i].Key)
