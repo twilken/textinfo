@@ -45,10 +45,6 @@ func sortMapByValue(m map[string]int) PairList {
     return p
 }
 
-func init() {
-    flag.Parse()
-}
-
 func readText(path *string) *string {
     dat, err := ioutil.ReadFile(*flagPath)
     if err != nil {
@@ -85,12 +81,12 @@ func countWords(words *[]string) *map[string]int {
 }
 
 func main() {
+    flag.Parse()
     text := readText(flagPath)
     words := extractWords(text)
     totalWordCount := len(*words)
     counts := countWords(words)
     sorted := sortMapByValue(*counts)
-
     fmt.Println("Total number of words:", totalWordCount)
     for i := 0; i < *flagNumOfWordsToPrint; i++ {
         fmt.Printf("%5v %v\n", sorted[i].Value, sorted[i].Key)
