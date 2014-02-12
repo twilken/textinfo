@@ -20,9 +20,17 @@ type Pair struct {
 // A slice of Pairs that implements sort.Interface to sort by Value.
 type PairList []Pair
 
-func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p PairList) Len() int           { return len(p) }
-func (p PairList) Less(i, j int) bool { return p[i].Value > p[j].Value }
+func (p PairList) Swap(i, j int) { 
+	p[i], p[j] = p[j], p[i] 
+}
+
+func (p PairList) Len() int { 
+	return len(p) 
+}
+
+func (p PairList) Less(i, j int) bool { 
+	return p[i].Value > p[j].Value 
+}
 
 // A function to turn a map into a PairList, then sort and return it.
 func sortMapByValue(m map[string]int) PairList {
@@ -50,7 +58,8 @@ func readText(path *string) *string {
 }
 
 func extractWords(text *string) *[]string {
-	words := strings.FieldsFunc(*text, func(r rune) bool {
+	lowercase := strings.ToLower(*text)
+	words := strings.FieldsFunc(lowercase, func(r rune) bool {
 		switch r {
 		case '.', ',', '!', '?', ' ', '"', ':', ';', '(', ')', '\n', '\r',
 			'\t', '\v', '\\', '/', '\f', '\a', '\b':
