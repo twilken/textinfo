@@ -10,6 +10,7 @@ import (
 )
 
 var flagPath = flag.String("path", "./text.txt", "The textfile you want to analyse.")
+var flagNumOfWordsToPrint = flag.Int("n", 50, "Number of most frequent words to show")
 
 // A data structure to hold a key/value pair.
 type Pair struct {
@@ -91,8 +92,7 @@ func main() {
     sorted := sortMapByValue(*counts)
 
     fmt.Println("Total number of words:", totalWordCount)
-    numberOfWordsToPrint := 45
-    for i := 0; i < numberOfWordsToPrint; i++ {
+    for i := 0; i < *flagNumOfWordsToPrint; i++ {
         fmt.Printf("%5v %v\n", sorted[i].Value, sorted[i].Key)
     }
 }
