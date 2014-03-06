@@ -7,12 +7,12 @@
 
 Print the 10 most frequent words in dracula.txt:
 ```
-./textinfo -path="./dracula.txt -n=10"
+textinfo dracula.txt 10
 ```
 
 Print the 50 most frequent words in bambi.txt. 50 is the default:
 ```
-./textinfo -path="./bambi.txt"
+textinfo bambi.txt
 ```
 
 ### Why
