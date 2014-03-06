@@ -6,10 +6,12 @@ import (
 	"io/ioutil"
 	"log"
 	"sort"
+	"strconv"
 	"strings"
 )
 
-var flagPath = flag.String("path", "./text.txt", "The textfile you want to analyse.")
+const usage = "Usage: textinfo textfile [numOfMostFrequentWordsToShow]"
+const defaultNumOfWordsToShow = 50
 
 // A data structure to hold a key/value pair.
 type Pair struct {
@@ -17,12 +19,20 @@ type Pair struct {
 	Value int
 }
 
-// A slice of Pairs that implements sort. Interface to sort by Value.
+// A slice of Pairs that implements sort. Interface to sort by Value. Used as a sortable map.
 type PairList []Pair
 
-func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p PairList) Len() int           { return len(p) }
-func (p PairList) Less(i, j int) bool { return p[i].Value > p[j].Value }
+func (p PairList) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p PairList) Len() int {
+	return len(p)
+}
+
+func (p PairList) Less(i, j int) bool {
+	return p[i].Value > p[j].Value
+}
 
 // A function to turn a map into a PairList, then sort and return it.
 func sortMapByValue(m map[string]int) PairList {
@@ -36,23 +46,22 @@ func sortMapByValue(m map[string]int) PairList {
 	return p
 }
 
-func init() {
-	flag.Parse()
-}
-
+// Read text from file at path and return the whole text as a string reference.
 func readText(path *string) *string {
-	dat, err := ioutil.ReadFile(*flagPath)
+	dat, err := ioutil.ReadFile(*path)
 	if err != nil {
-		log.Fatal("Could not read file at " + *path)
+		log.Fatal("Could not read file " + *path + "\n" + usage)
 	}
 	text := string(dat)
 	return &text
 }
 
+// Split a string into an array of words.
 func extractWords(text *string) *[]string {
-	words := strings.FieldsFunc(*text, func(r rune) bool {
+	lowercase := strings.ToLower(*text)
+	words := strings.FieldsFunc(lowercase, func(r rune) bool {
 		switch r {
-		case '.', ',', '!', '?', ' ', '"', '\'', ':', ';', '(', ')', '\n', '\r',
+		case '.', ',', '!', '?', ' ', '"', ':', ';', '(', ')', '\n', '\r',
 			'\t', '\v', '\\', '/', '\f', '\a', '\b':
 			return true
 		}
@@ -61,6 +70,7 @@ func extractWords(text *string) *[]string {
 	return &words
 }
 
+// Return a map of each word and it's frequency.
 func countWords(words *[]string) *map[string]int {
 	counts := make(map[string]int)
 	for _, word := range *words {
@@ -74,13 +84,38 @@ func countWords(words *[]string) *map[string]int {
 	return &counts
 }
 
+func getArgs() (string, int) {
+	numArgs := flag.NArg()
+	path := ""
+	numOfWordsToShow := defaultNumOfWordsToShow
+	if numArgs == 1 {
+		path = flag.Arg(0)
+	} else if numArgs == 2 {
+		path = flag.Arg(0)
+		arg2, err := strconv.Atoi(flag.Arg(1))
+		if err != nil {
+			log.Fatal("Second argument has to be an integer.\n" + usage)
+		}
+		if arg2 < 0 {
+			log.Fatal("Second argument has to be a positive integer.\n" + usage)
+		}
+		numOfWordsToShow = arg2
+	} else {
+		log.Fatal("Wrong number of arguments.\n" + usage)
+	}
+	return path, numOfWordsToShow
+}
+
 func main() {
-	text := readText(flagPath)
+	flag.Parse()
+	path, numOfWordsToShow := getArgs()
+	text := readText(&path)
 	words := extractWords(text)
+	totalWordCount := len(*words)
 	counts := countWords(words)
 	sorted := sortMapByValue(*counts)
-
-	for _, pair := range sorted {
-		fmt.Printf("%5v %v\n", pair.Value, pair.Key)
+	fmt.Println("Total number of words:", totalWordCount)
+	for i := 0; i < numOfWordsToShow && i < len(sorted); i++ {
+		fmt.Printf("%5v %v\n", sorted[i].Value, sorted[i].Key)
 	}
 }
