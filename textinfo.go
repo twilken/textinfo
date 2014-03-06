@@ -17,7 +17,7 @@ type Pair struct {
 	Value int
 }
 
-// A slice of Pairs that implements sort.Interface to sort by Value.
+// A slice of Pairs that implements sort. Interface to sort by Value.
 type PairList []Pair
 
 func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
